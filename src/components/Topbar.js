@@ -7,8 +7,8 @@ const Topbar = () => {
         {/* <button id="btn-shopping-cart">
           <i className="fas fa-shopping-cart"></i>
         </button> */}
-        <button id="btn-sign-out">
-          <i className="fas fa-sign-out-alt"></i>
+        <button alt="signOut" id="btn-sign-out">
+          <i className="fas fa-sign-out-alt">Sign Out</i>
         </button>
       </div>
     </nav>

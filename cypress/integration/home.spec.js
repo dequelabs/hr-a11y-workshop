@@ -38,13 +38,15 @@ describe('HR-a11y Home', () => {
      */
     it('Should have an accessible homepage', () => {
 
-      cy.location('href', {timeout: 6000}).should('eq', ''+Cypress.config().baseUrl);
+      cy.location('href', {timeout: 6000}).should('eq', ''+Cypress.config().baseUrl + "/");
 
       cy.setAxeRuleset('wcag2.1').axeAnalyze({name: "home"});
       cy.getAxeResults().then(async results => {
         const resultsDir = './a11y-results/'
         await cy.writeFile(`${resultsDir}home.json`, results);
         await cy.task('reportAsHTML', { resultsDir });
+        await cy.task('reportAsCSV', { resultsDir });
+        await cy.task('reportAsJunit', {resultsDir});
         // expect(results.findings.violations).to.equal([]);
         cy.readFile(`${resultsDir}home.json`).then((data) =>{
           expect(data.findings.violations.length).to.equal(0);
@@ -53,8 +55,8 @@ describe('HR-a11y Home', () => {
     });
 
     it('Should have an accessible timesheet', () => {
-      cy.location('href', {timeout: 6000}).should('eq', '' + Cypress.config().baseUrl);
-      let logTime = "#main-content > div > div:nth-child(1) > div:nth-child(1) > div > div > div:nth-child(2) > div.mb-2.row > button";
+      cy.location('href', {timeout: 6000}).should('eq', '' + Cypress.config().baseUrl + "/");
+      let logTime = "#main-content > div > div:nth-child(1) > div:nth-child(1) > div > div > div:nth-child(2) > button.btn.btn-success.btn-lg.d-block.w-100";
       cy.get(logTime).click();
       cy.location('href', {timeout: 6000}).should('contain', '/timesheets');
       cy.axeAnalyze({name: "timeSheet"});
@@ -70,7 +72,7 @@ describe('HR-a11y Home', () => {
     });
 
     it('Should have an accessible PTO Request System', () => {
-      cy.location('href', {timeout: 6000}).should('eq', "" + Cypress.config().baseUrl);
+      cy.location('href', {timeout: 6000}).should('eq', "" + Cypress.config().baseUrl + "/");
       let PTORequest = "#openPTOModal"
       cy.get(PTORequest).click()
       cy.get("#type").select("Vacation");

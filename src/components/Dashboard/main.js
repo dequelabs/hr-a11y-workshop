@@ -32,7 +32,7 @@ const Dashboard = () => {
               <p className="h5">A Container</p>
             </CardHeader>
             <CardBody>
-              <h2>Add items here</h2>
+              <img src="foo.bar" tabIndex="1"/>
 
             </CardBody>
           </Card>

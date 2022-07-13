@@ -32,7 +32,6 @@ const Dashboard = () => {
               <p className="h5">A Container</p>
             </CardHeader>
             <CardBody>
-              <img src="foo.bar" tabIndex="1"/>
 
             </CardBody>
           </Card>

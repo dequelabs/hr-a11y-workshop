@@ -1,0 +1,61 @@
+#!/bin/sh
+# axe-linter pre-commit
+## 0 - No Accessibility Defects
+## 1 - Axe Linter Detected Accessibility Defects
+## 2 - Execution problem, or Axe-Linter Server unavailable.
+echo ""
+echo "Axe Linter Starting $(date)"
+# Setup variables for Axe Linter Server
+export AXE_LINTER_SERVER_URL=https://axe-linter.deque.com/lint-source
+export AXE_LINTER_SERVER_PORT=3000
+StatusCode=0
+TempCode=0
+ApiKey=741f2032-bc25-4397-b53c-2f02d203a2d6
+
+for File in $(git status --porcelain | sed s/^...//); do
+   TempStatus=0
+shopt -s nocasematch;
+        if [[ $File == *.html ]] || [[ $File == *.js ]] || [[ $File == *.jsx ]]|| [[ $File == *.tsx ]]|| [[ $File == *.vue ]]|| [[ $File == *.htm ]]|| [[ $File == *.md ]]|| [[ $File == *.markdown ]];
+        then
+        # execute axe-linter connector - Update with connector name
+        # axe-linter-connector-win.exe -s $File -d . -u $AXE_LINTER_SERVER_URL -p $AXE_LINTER_SERVER_PORT
+        
+        FileContents="$(cat "$File")"
+		RequestBody=$(
+			jq \
+			--null-input \
+			--arg Source "$FileContents" \
+			--arg Filename "$File" \
+			'{ "source": $Source, "filename": $Filename }'
+		)
+
+		Response=$(
+			curl \
+			--silent \
+			--request POST \
+			--url https://axe-linter.deque.com/lint-source \
+			--header "content-type: application/json" \
+			--header "authorization: $ApiKey" \
+			--data "${RequestBody}"
+		)
+
+        ErrorCount=$(echo "$Response" | jq '.report.errors | length')
+        
+	      echo ""
+              echo "** Axe Linter Accessibility Issues Detected: $File"
+              TempCode=1
+           else
+             echo "- No Axe Linter Connector Issues Detected in: $File"
+           if (($TempCode !=0))
+           then
+            StatusCode=1
+          fi
+        # rm $OutFile
+        fi
+done
+
+if (($StatusCode !=0))
+        then
+        echo "** Commit Failed due to Accessibility Issues **"
+        fi
+exit $StatusCode
